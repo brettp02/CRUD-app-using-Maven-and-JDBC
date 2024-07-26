@@ -144,7 +144,8 @@ public class StudentManager {
      * @throws NoSuchRecordException if no record corresponding to this student instance exists in the database
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testUpdate (followed by optional numbers if multiple tests are used)
      */
-    public static void update(Student student) throws NoSuchRecordException {}
+    public static void update(Student student) throws NoSuchRecordException {
+    }
 
 
     /**
@@ -158,8 +159,52 @@ public class StudentManager {
      * @return a freshly created student instance
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testNewStudent (followed by optional numbers if multiple tests are used)
      */
-    public static Student newStudent(String name,String firstName,Degree degree) {
-        return null;
+    public static Student newStudent(String name,String firstName,Degree degree) throws SQLException{
+        Collection<String> currentIds = fetchAllStudentIds();
+
+        int maxIdNumber = 0;
+
+        // Find highest number id and add 1, similar to "SERIAL" in PostgreSQL
+        for (String id : currentIds) {
+            try {
+                int idNumber = Integer.parseInt(id.substring(2)); // Get numeric part
+                if (idNumber > maxIdNumber) {
+                    maxIdNumber = idNumber;
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String newId = "id" + maxIdNumber + 1;
+
+        String query = "INSERT INTO STUDENTS (id, name, first_name, degree) values(?,?,?,?)";
+
+        try (Connection con = getConnection()) {
+            System.out.println("Connection successful: " + con);
+            try (PreparedStatement stmt = con.prepareStatement(query)) {
+                stmt.setString(1, newId);
+                stmt.setString(2, name);
+                stmt.setString(3, firstName);
+                stmt.setString(4, degree.getId());
+
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new SQLException("Inserting student failed, no rows affected.");
+                }
+
+                // check constraints before returning student
+                if(firstName.length() < 10 && name.length() < 10 && !currentIds.contains(newId)) {
+                    return new Student(newId, name, firstName, degree);
+                }
+                else {
+                    throw new SQLException("Name length or id number constraints are being violated for: " + firstName + " " + name + " with student id: "+ newId +". Constraints = names < 10 char && id must be new");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("Error inserting new student with id: " + newId, e);
+        }
     }
 
     /**

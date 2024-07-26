@@ -29,9 +29,6 @@ public class TestStudentManager {
         assertNotNull(student);
     }
 
-    /**
-     * if no record with such an id exists in the database
-     */
     @Test
     public void testFetchStudent1() throws Exception {
         Student student = new StudentManager().fetchStudent("id2");
@@ -44,9 +41,6 @@ public class TestStudentManager {
         assertThrows(NoSuchRecordException.class, () -> {StudentManager.fetchStudent("invalid_id");});
     }
 
-    /**
-     * if no record with such an id exists in the database
-     */
     @Test
     public void testFetchDegree1() throws Exception {
         Degree degree = new StudentManager().fetchDegree("deg5");
@@ -60,9 +54,6 @@ public class TestStudentManager {
     }
 
 
-    /**
-     * if no record corresponding to this student instance exists in the database
-     */
     @Test
     public void testRemove() throws Exception {
         Student student = new StudentManager().fetchStudent("id6");
@@ -72,9 +63,6 @@ public class TestStudentManager {
     }
 
 
-    /**
-     * if no record corresponding to this student instance exists in the database
-     */
     @Test
     public void testUpdate() throws Exception {
         Student student = new StudentManager().fetchStudent("id2");
@@ -83,7 +71,6 @@ public class TestStudentManager {
         Student updated = new StudentManager().fetchStudent("id2");
         assertEquals("New",updated.getName());
     }
-
 
     @Test
     public void testNewStudent() throws Exception {
