@@ -116,7 +116,23 @@ public class StudentManager {
      * @throws NoSuchRecordException if no record corresponding to this student instance exists in the database
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testRemove
      */
-    public static void remove(Student student) throws NoSuchRecordException {}
+    public static void remove(Student student) throws NoSuchRecordException {
+        String query = "DELETE FROM students WHERE id = ?";
+
+        try (Connection con = getConnection()) {
+            System.out.println("Connection successful: " + con);
+            try (PreparedStatement stmt = con.prepareStatement(query)) {
+                stmt.setString(1, student.getId());
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new NoSuchRecordException("No student found with id: " + student.getId());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new NoSuchRecordException("Error deleting student with id: " + student.getId(), e);
+        }
+    }
 
     /**
      * Update (synchronize) a student instance with the database.
