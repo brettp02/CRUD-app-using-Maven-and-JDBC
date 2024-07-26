@@ -7,7 +7,7 @@ import nz.ac.wgtn.swen301.studentdb.StudentDB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.*;
+import java.util.Collection;
 
 /**
  * Unit tests for StudentManager, to be extended.
@@ -34,9 +34,9 @@ public class TestStudentManager {
      */
     @Test
     public void testFetchStudent1() throws Exception {
-        Student student = new StudentManager().fetchStudent("id1");
+        Student student = new StudentManager().fetchStudent("id2");
         assertNotNull(student);
-        assertEquals("id1",student.getId());
+        assertEquals("id2",student.getId());
     }
 
     @Test
@@ -110,10 +110,5 @@ public class TestStudentManager {
         assertNotNull(studentIds);
         assert studentIds.size() > 0;
     }
-
-
-
-
-
 
 }

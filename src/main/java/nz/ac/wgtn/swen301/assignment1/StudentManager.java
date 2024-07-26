@@ -2,12 +2,16 @@ package nz.ac.wgtn.swen301.assignment1;
 
 import nz.ac.wgtn.swen301.studentdb.*;
 import java.util.Collection;
+import java.sql.*;
+import java.util.*;
+
 
 /**
  * A student manager providing basic CRUD operations for instances of Student, and a read operation for instances of Degree.
  * @author jens dietrich
  */
 public class StudentManager {
+    private static String url =  "jdbc:derby:memory:studentdb";
 
     // DO NOT REMOVE THE FOLLOWING -- THIS WILL ENSURE THAT THE DATABASE IS AVAILABLE
     // AND THE APPLICATION CAN CONNECT TO IT WITH JDBC
@@ -15,6 +19,14 @@ public class StudentManager {
         StudentDB.init();
     }
     // DO NOT REMOVE BLOCK ENDS HERE
+
+    /**
+     * Connect to DB
+     * @return - Connection object
+     */
+    private static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url);
+    }
 
     // THE FOLLOWING METHODS MUST BE IMPLEMENTED :
 
@@ -27,7 +39,37 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testFetchStudent (followed by optional numbers if multiple tests are used)
      */
     public static Student fetchStudent(String id) throws NoSuchRecordException {
-        return null;
+        String query = "SELECT s.id, s.first_name, s.name, d.id AS student, d.name AS d_id, d.id AS degree " +
+                        "FROM STUDENTS s " +
+                        "JOIN DEGREES d ON s.degree = d.id " +
+                        "WHERE s.id = ?";
+
+        try (Connection con = getConnection()) {
+            System.out.println("Connection successful: " + con);
+            try (PreparedStatement stmt = con.prepareStatement(query)) {
+                stmt.setString(1, id);
+                System.out.println("PreparedStatement successful: " + stmt);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        String studentId = rs.getString("id");
+                        String firstName = rs.getString("first_name");
+                        String name = rs.getString("name");
+                        String degreeId = rs.getString("degree");
+                        String degreeName = rs.getString("d_id");
+
+                        System.out.println("Retrieved student details - ID: " + studentId + ", First Name: " + firstName + ", Name: " + name + ", Degree ID: " + degreeId + ", Degree Name: " + degreeName);
+
+                        Degree degree = new Degree(degreeId, degreeName);
+                        return new Student(studentId, firstName, name, degree);
+                    } else {
+                        throw new NoSuchRecordException("No student found with id: " + id);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new NoSuchRecordException("Error fetching student with id: " + id);
+        }
     }
 
     /**
