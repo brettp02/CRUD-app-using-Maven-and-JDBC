@@ -48,7 +48,7 @@ public class StudentManager {
             System.out.println("Connection successful: " + con);
             try (PreparedStatement stmt = con.prepareStatement(query)) {
                 stmt.setString(1, id);
-                System.out.println("PreparedStatement successful: " + stmt);
+                //System.out.println("PreparedStatement successful: " + stmt);
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
                         String studentId = rs.getString("id");
@@ -57,9 +57,9 @@ public class StudentManager {
                         String degreeId = rs.getString("degree");
                         String degreeName = rs.getString("d_id");
 
-                        System.out.println("Retrieved student details - ID: " + studentId + ", First Name: " + firstName + ", Name: " + name + ", Degree ID: " + degreeId + ", Degree Name: " + degreeName);
+                        //System.out.println("Retrieved student details - ID: " + studentId + ", First Name: " + firstName + ", Name: " + name + ", Degree ID: " + degreeId + ", Degree Name: " + degreeName);
 
-                        Degree degree = new Degree(degreeId, degreeName);
+                        Degree degree = fetchDegree(degreeId);
                         return new Student(studentId, firstName, name, degree);
                     } else {
                         throw new NoSuchRecordException("No student found with id: " + id);
@@ -81,7 +81,32 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testFetchDegree (followed by optional numbers if multiple tests are used)
      */
     public static Degree fetchDegree(String id) throws NoSuchRecordException {
-        return null;
+        String query = "SELECT *" +
+                "FROM DEGREES  " +
+                "WHERE id = ?";
+
+        try (Connection con = getConnection()) {
+            System.out.println("Connection successful: " + con);
+            try (PreparedStatement stmt = con.prepareStatement(query)) {
+                stmt.setString(1, id);
+                //System.out.println("PreparedStatement successful: " + stmt);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        String degreeId = rs.getString("id");
+                        String degreeName = rs.getString("name");
+
+                        //System.out.println("Retrieved student details - ID: " + studentId + ", First Name: " + firstName + ", Name: " + name + ", Degree ID: " + degreeId + ", Degree Name: " + degreeName);
+
+                        return new Degree(degreeId,degreeName);
+                    } else {
+                        throw new NoSuchRecordException("No degree found with id: " + id);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new NoSuchRecordException("Error fetching degree with id: " + id);
+        }
     }
 
     /**

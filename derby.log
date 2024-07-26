@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Fri Jul 26 16:23:18 NZST 2024:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0190-ed47-699a-000006c9f310 
+Fri Jul 26 16:35:01 NZST 2024:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0190-ed52-239f-000006c9d718 
 on database directory memory:/Users/brettpenwarden/Desktop/University/SWEN301/swen301-2024-assignment1-template-main/studentdb with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@251a69d7 
 Loaded from file:/Users/brettpenwarden/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar
 java.vendor=Oracle Corporation
