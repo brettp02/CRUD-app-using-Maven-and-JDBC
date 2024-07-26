@@ -152,7 +152,25 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testFetchAllStudentIds (followed by optional numbers if multiple tests are used)
      */
     public static Collection<String> fetchAllStudentIds() {
-        return null;
+        String query = "SELECT * FROM STUDENTS";
+
+        Collection<String> studentIds = new ArrayList<>();
+
+        try (Connection con = getConnection()) {
+            System.out.println("Connection successful: " + con);
+            try (PreparedStatement stmt = con.prepareStatement(query)) {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        studentIds.add(rs.getString("id"));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("error " + e);
+        }
+        //System.out.println(studentIds);
+        return studentIds;
     }
 
 
