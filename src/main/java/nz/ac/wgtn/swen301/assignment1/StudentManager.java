@@ -45,10 +45,8 @@ public class StudentManager {
                         "WHERE s.id = ?";
 
         try (Connection con = getConnection()) {
-            System.out.println("Connection successful: " + con);
             try (PreparedStatement stmt = con.prepareStatement(query)) {
                 stmt.setString(1, id);
-                //System.out.println("PreparedStatement successful: " + stmt);
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
                         String studentId = rs.getString("id");
@@ -145,6 +143,26 @@ public class StudentManager {
      * This functionality is to be tested in nz.ac.wgtn.swen301.assignment1.TestStudentManager::testUpdate (followed by optional numbers if multiple tests are used)
      */
     public static void update(Student student) throws NoSuchRecordException {
+        String query = "UPDATE students SET first_name = ?, name = ?, degree = ? WHERE id = ?";
+
+        try(Connection con = getConnection()) {
+            //System.out.println("Connection successfull" + con);
+
+            try(PreparedStatement stmt = con.prepareStatement(query)){
+                stmt.setString(1, student.getFirstName());
+                stmt.setString(2, student.getName());
+                stmt.setString(3, student.getDegree().getId());
+                stmt.setString(4, student.getId());
+
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new NoSuchRecordException("No student found with id: " + student.getId());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new NoSuchRecordException("Error updating student with id: " + student.getId(), e);
+        }
     }
 
 

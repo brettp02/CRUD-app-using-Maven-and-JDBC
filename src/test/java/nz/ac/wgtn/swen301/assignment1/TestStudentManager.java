@@ -65,11 +65,11 @@ public class TestStudentManager {
 
     @Test
     public void testUpdate() throws Exception {
-        Student student = new StudentManager().fetchStudent("id2");
-        student.setName("New");
+        Student student = new Student("id5","Name","First", new Degree("deg1","newDegree"));
         StudentManager.update(student);
-        Student updated = new StudentManager().fetchStudent("id2");
-        assertEquals("New",updated.getName());
+
+        Student updated = new StudentManager().fetchStudent("id5");
+        assertEquals(updated,student);
     }
 
     @Test
@@ -96,6 +96,23 @@ public class TestStudentManager {
         Collection<String> studentIds = new StudentManager().fetchAllStudentIds();
         assertNotNull(studentIds);
         assert studentIds.size() > 0;
+    }
+
+    @Test
+    public void testPerformance() throws Exception {
+        final int numberOfFetches = 500;
+        final int maxDuration = 1000;
+
+        long startTime = System.currentTimeMillis();
+
+        for(int i = 0; i < numberOfFetches; i++){
+            StudentManager.fetchStudent("id" + i);
+        }
+
+        long duration = System.currentTimeMillis() - startTime;
+        System.out.println(duration + "ms");
+
+        assert duration < maxDuration;
     }
 
 }
