@@ -1,10 +1,10 @@
 ----------------------------------------------------------------
-Mon Aug 05 16:17:56 NZST 2024:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0191-20c2-18ab-000006ca00b8 
-on database directory memory:/Users/brettpenwarden/Desktop/University/SWEN301/swen301-2024-assignment1-template-main/studentdb with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@251a69d7 
+Mon Aug 05 16:38:27 NZST 2024:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0191-20d4-de77-000006bfdf08 
+on database directory memory:/Users/brettpenwarden/Desktop/University/SWEN301/swen301-2024-assignment1-template-main/studentdb with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@18769467 
 Loaded from file:/Users/brettpenwarden/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar
-java.vendor=Oracle Corporation
-java.runtime.version=18.0.1.1+2-6
+java.vendor=Homebrew
+java.runtime.version=22.0.1
 user.dir=/Users/brettpenwarden/Desktop/University/SWEN301/swen301-2024-assignment1-template-main
 os.name=Mac OS X
 os.arch=aarch64

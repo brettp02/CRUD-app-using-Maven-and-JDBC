@@ -13,7 +13,6 @@ import java.util.*;
 public class StudentManager {
     private static String url =  "jdbc:derby:memory:studentdb";
 
-
     // cache/hashmap, in order to track existing students
     private static Map<String, Student> studentCache = new HashMap<>();
     private static Map<String, Degree> degreeCache = new HashMap<>();

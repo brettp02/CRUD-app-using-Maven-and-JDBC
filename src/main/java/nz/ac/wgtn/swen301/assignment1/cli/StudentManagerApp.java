@@ -8,5 +8,7 @@ public class StudentManagerApp {
      * E.g. a user could invoke this by running "java -cp <someclasspath> <arguments></arguments>"
      * @param arg
      */
-    public static void main (String[] arg) {}
+    public static void main (String[] arg) {
+        System.out.println("Testing if the executable is correctly created");
+    }
 }
