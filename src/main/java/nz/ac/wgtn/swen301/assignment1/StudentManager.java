@@ -13,6 +13,12 @@ import java.util.*;
 public class StudentManager {
     private static String url =  "jdbc:derby:memory:studentdb";
 
+
+    // cache/hashmap, in order to track existing students
+    private static Map<String, Student> studentCache = new HashMap<>();
+    private static Map<String, Degree> degreeCache = new HashMap<>();
+
+
     // DO NOT REMOVE THE FOLLOWING -- THIS WILL ENSURE THAT THE DATABASE IS AVAILABLE
     // AND THE APPLICATION CAN CONNECT TO IT WITH JDBC
     static {
@@ -44,6 +50,11 @@ public class StudentManager {
                         "JOIN DEGREES d ON s.degree = d.id " +
                         "WHERE s.id = ?";
 
+        // If instance already exist return existing student
+        if(studentCache.containsKey(id)){
+            return studentCache.get(id);
+        }
+
         try (Connection con = getConnection()) {
             try (PreparedStatement stmt = con.prepareStatement(query)) {
                 stmt.setString(1, id);
@@ -56,9 +67,10 @@ public class StudentManager {
                         String degreeName = rs.getString("d_id");
 
                         //System.out.println("Retrieved student details - ID: " + studentId + ", First Name: " + firstName + ", Name: " + name + ", Degree ID: " + degreeId + ", Degree Name: " + degreeName);
-
                         Degree degree = fetchDegree(degreeId);
-                        return new Student(studentId, firstName, name, degree);
+                        Student student = new Student(studentId, firstName, name, degree);
+                        studentCache.put(studentId,student);
+                        return student;
                     } else {
                         throw new NoSuchRecordException("No student found with id: " + id);
                     }
@@ -83,6 +95,11 @@ public class StudentManager {
                 "FROM DEGREES  " +
                 "WHERE id = ?";
 
+        // If instance with this id already exists return existing instance
+        if(degreeCache.containsKey(id)){
+            return degreeCache.get(id);
+        }
+
         try (Connection con = getConnection()) {
             System.out.println("Connection successful: " + con);
             try (PreparedStatement stmt = con.prepareStatement(query)) {
@@ -94,8 +111,10 @@ public class StudentManager {
                         String degreeName = rs.getString("name");
 
                         //System.out.println("Retrieved student details - ID: " + studentId + ", First Name: " + firstName + ", Name: " + name + ", Degree ID: " + degreeId + ", Degree Name: " + degreeName);
+                        Degree degree = new Degree(degreeId,degreeName);
+                        degreeCache.put(degreeId,degree);
 
-                        return new Degree(degreeId,degreeName);
+                        return degree;
                     } else {
                         throw new NoSuchRecordException("No degree found with id: " + id);
                     }
@@ -122,6 +141,7 @@ public class StudentManager {
             try (PreparedStatement stmt = con.prepareStatement(query)) {
                 stmt.setString(1, student.getId());
                 int rowsAffected = stmt.executeUpdate();
+                studentCache.remove(student.getId());
                 if (rowsAffected == 0) {
                     throw new NoSuchRecordException("No student found with id: " + student.getId());
                 }
@@ -155,6 +175,7 @@ public class StudentManager {
                 stmt.setString(4, student.getId());
 
                 int rowsAffected = stmt.executeUpdate();
+                studentCache.put(student.getId(),student);
                 if (rowsAffected == 0) {
                     throw new NoSuchRecordException("No student found with id: " + student.getId());
                 }
@@ -207,13 +228,17 @@ public class StudentManager {
                 stmt.setString(4, degree.getId());
 
                 int rowsAffected = stmt.executeUpdate();
+
                 if (rowsAffected == 0) {
                     throw new SQLException("Inserting student failed, no rows affected.");
                 }
 
                 // check constraints before returning student
                 if(firstName.length() < 10 && name.length() < 10 && !currentIds.contains(newId)) {
-                    return new Student(newId, name, firstName, degree);
+
+                    Student student = new Student(newId, name, firstName, degree);
+                    studentCache.put(newId,student);
+                    return student;
                 }
                 else {
                     throw new SQLException("Name length or id number constraints are being violated for: " + firstName + " " + name + " with student id: "+ newId +". Constraints = names < 10 char && id must be new");
