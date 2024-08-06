@@ -7,7 +7,7 @@ import nz.ac.wgtn.swen301.studentdb.StudentDB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.*;
+import java.util.Collection;
 
 /**
  * Unit tests for StudentManager, to be extended.
@@ -29,14 +29,11 @@ public class TestStudentManager {
         assertNotNull(student);
     }
 
-    /**
-     * if no record with such an id exists in the database
-     */
     @Test
     public void testFetchStudent1() throws Exception {
-        Student student = new StudentManager().fetchStudent("id1");
+        Student student = new StudentManager().fetchStudent("id2");
         assertNotNull(student);
-        assertEquals("id1",student.getId());
+        assertEquals("id2",student.getId());
     }
 
     @Test
@@ -44,9 +41,6 @@ public class TestStudentManager {
         assertThrows(NoSuchRecordException.class, () -> {StudentManager.fetchStudent("invalid_id");});
     }
 
-    /**
-     * if no record with such an id exists in the database
-     */
     @Test
     public void testFetchDegree1() throws Exception {
         Degree degree = new StudentManager().fetchDegree("deg5");
@@ -60,9 +54,6 @@ public class TestStudentManager {
     }
 
 
-    /**
-     * if no record corresponding to this student instance exists in the database
-     */
     @Test
     public void testRemove() throws Exception {
         Student student = new StudentManager().fetchStudent("id6");
@@ -72,18 +63,14 @@ public class TestStudentManager {
     }
 
 
-    /**
-     * if no record corresponding to this student instance exists in the database
-     */
     @Test
     public void testUpdate() throws Exception {
-        Student student = new StudentManager().fetchStudent("id2");
-        student.setName("New");
+        Student student = new Student("id5","Name","First", new Degree("deg1","newDegree"));
         StudentManager.update(student);
-        Student updated = new StudentManager().fetchStudent("id2");
-        assertEquals("New",updated.getName());
-    }
 
+        Student updated = new StudentManager().fetchStudent("id5");
+        assertEquals(updated,student);
+    }
 
     @Test
     public void testNewStudent() throws Exception {
@@ -111,9 +98,21 @@ public class TestStudentManager {
         assert studentIds.size() > 0;
     }
 
+    @Test
+    public void testPerformance() throws Exception {
+        final int numberOfFetches = 500;
+        final int maxDuration = 1000;
 
+        long startTime = System.currentTimeMillis();
 
+        for(int i = 0; i < numberOfFetches; i++){
+            StudentManager.fetchStudent("id" + i);
+        }
 
+        long duration = System.currentTimeMillis() - startTime;
+        System.out.println(duration + "ms");
 
+        assert duration < maxDuration;
+    }
 
 }
