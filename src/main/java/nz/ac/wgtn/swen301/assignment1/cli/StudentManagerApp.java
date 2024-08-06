@@ -38,21 +38,26 @@ public class StudentManagerApp {
             if(cmd.hasOption("select")) {
                 // Fetch respective student and display result on console
                 String studentId = cmd.getOptionValue("select");
-
                 try{
                     System.out.println(printStudent(StudentManager.fetchStudent(studentId)));
                 } catch (NoSuchRecordException e) {e.printStackTrace();}
-            } else if(cmd.hasOption("all")){
+            }
+            // Check if "all" option present
+            else if(cmd.hasOption("all")){
+                // Print all to terminal sout
                 printAll(StudentManager.fetchAllStudentIds());
-            } else if(cmd.hasOption("export")){
+            }
+            // Check if "export" option present
+            else if(cmd.hasOption("export")){
+                // Fetch the export file name
                 String exportFile = cmd.getOptionValue("export");
+
+                // Export all studnets into exportFile.csv
                 exportCsv(exportFile,StudentManager.fetchAllStudentIds());
             }
-
         } catch (ParseException p) {
             p.printStackTrace();
         }
-
     }
 
     /**
@@ -81,10 +86,18 @@ public class StudentManagerApp {
             e.printStackTrace();
         }
 
+        // Just printing the list to keep all on one line
         System.out.println(students);
         return students;
     }
 
+    /**
+     * Similar to Print all but this creates 2d array list with each student as it's own list
+     * keeps it clean when exporting as csv
+     *
+     * @param allStudents
+     * @return
+     */
     private static List<List<String>> getAllStudents(Collection<String> allStudents){
         List<List<String>> students = new ArrayList<>();
         try {
@@ -100,10 +113,18 @@ public class StudentManagerApp {
         } catch (NoSuchRecordException e) {
             e.printStackTrace();
         }
-
         return students;
     }
 
+    /**
+     * Converts allStudnets into 2d list using getAllStudents.
+     * Creates file based on export <fileName>
+     * Uses StringBuilder and PrintWriter to create .csv file in the same format as in the handout
+     *
+     * @param allStudents
+     * @param filename
+     * @return
+     */
     private static void exportCsv(String filename,  Collection<String> allStudents) {
         List<List<String>> values = getAllStudents(allStudents);
 
@@ -129,7 +150,6 @@ public class StudentManagerApp {
             }
 
             pw.write(sb.toString());
-            System.out.println(sb.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
