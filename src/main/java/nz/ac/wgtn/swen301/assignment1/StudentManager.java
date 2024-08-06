@@ -25,6 +25,7 @@ public class StudentManager {
     }
     // DO NOT REMOVE BLOCK ENDS HERE
 
+
     /**
      * Connect to DB
      * @return - Connection object
@@ -65,7 +66,6 @@ public class StudentManager {
                         String degreeId = rs.getString("degree");
                         String degreeName = rs.getString("d_id");
 
-                        //System.out.println("Retrieved student details - ID: " + studentId + ", First Name: " + firstName + ", Name: " + name + ", Degree ID: " + degreeId + ", Degree Name: " + degreeName);
                         Degree degree = fetchDegree(degreeId);
                         Student student = new Student(studentId, firstName, name, degree);
                         studentCache.put(studentId,student);
@@ -103,16 +103,13 @@ public class StudentManager {
             System.out.println("Connection successful: " + con);
             try (PreparedStatement stmt = con.prepareStatement(query)) {
                 stmt.setString(1, id);
-                //System.out.println("PreparedStatement successful: " + stmt);
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
                         String degreeId = rs.getString("id");
                         String degreeName = rs.getString("name");
 
-                        //System.out.println("Retrieved student details - ID: " + studentId + ", First Name: " + firstName + ", Name: " + name + ", Degree ID: " + degreeId + ", Degree Name: " + degreeName);
                         Degree degree = new Degree(degreeId,degreeName);
                         degreeCache.put(degreeId,degree);
-
                         return degree;
                     } else {
                         throw new NoSuchRecordException("No degree found with id: " + id);
@@ -136,7 +133,6 @@ public class StudentManager {
         String query = "DELETE FROM students WHERE id = ?";
 
         try (Connection con = getConnection()) {
-            System.out.println("Connection successful: " + con);
             try (PreparedStatement stmt = con.prepareStatement(query)) {
                 stmt.setString(1, student.getId());
                 int rowsAffected = stmt.executeUpdate();
@@ -165,8 +161,6 @@ public class StudentManager {
         String query = "UPDATE students SET first_name = ?, name = ?, degree = ? WHERE id = ?";
 
         try(Connection con = getConnection()) {
-            //System.out.println("Connection successfull" + con);
-
             try(PreparedStatement stmt = con.prepareStatement(query)){
                 stmt.setString(1, student.getFirstName());
                 stmt.setString(2, student.getName());
@@ -199,7 +193,6 @@ public class StudentManager {
      */
     public static Student newStudent(String name,String firstName,Degree degree) throws SQLException{
         Collection<String> currentIds = fetchAllStudentIds();
-
         int maxIdNumber = 0;
 
         // Find highest number id and add 1, similar to "SERIAL" in PostgreSQL
@@ -216,10 +209,10 @@ public class StudentManager {
 
         String newId = "id" + maxIdNumber + 1;
 
+
         String query = "INSERT INTO STUDENTS (id, name, first_name, degree) values(?,?,?,?)";
 
         try (Connection con = getConnection()) {
-            System.out.println("Connection successful: " + con);
             try (PreparedStatement stmt = con.prepareStatement(query)) {
                 stmt.setString(1, newId);
                 stmt.setString(2, name);
@@ -234,7 +227,6 @@ public class StudentManager {
 
                 // check constraints before returning student
                 if(firstName.length() < 10 && name.length() < 10 && !currentIds.contains(newId)) {
-
                     Student student = new Student(newId, name, firstName, degree);
                     studentCache.put(newId,student);
                     return student;
@@ -260,7 +252,6 @@ public class StudentManager {
         Collection<String> studentIds = new ArrayList<>();
 
         try (Connection con = getConnection()) {
-            System.out.println("Connection successful: " + con);
             try (PreparedStatement stmt = con.prepareStatement(query)) {
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
@@ -272,10 +263,6 @@ public class StudentManager {
             e.printStackTrace();
             System.out.println("error " + e);
         }
-        //System.out.println(studentIds);
         return studentIds;
     }
-
-
-
 }
