@@ -46,7 +46,7 @@ public class StudentManagerApp {
                 printAll(StudentManager.fetchAllStudentIds());
             } else if(cmd.hasOption("export")){
                 String exportFile = cmd.getOptionValue("export");
-
+                exportCsv(exportFile,StudentManager.fetchAllStudentIds());
             }
 
         } catch (ParseException p) {
@@ -85,7 +85,53 @@ public class StudentManagerApp {
         return students;
     }
 
-    private static void exportCsv(String filename) {
+    private static List<List<String>> getAllStudents(Collection<String> allStudents){
+        List<List<String>> students = new ArrayList<>();
+        try {
+            for (String s : allStudents) {
+                List<String> attributes = new ArrayList<>();
+                Student student = StudentManager.fetchStudent(s);
+                attributes.add(student.getId());
+                attributes.add(student.getName());
+                attributes.add(student.getFirstName());
+                attributes.add(student.getDegree().getId());
+                students.add(attributes);
+            }
+        } catch (NoSuchRecordException e) {
+            e.printStackTrace();
+        }
 
+        return students;
+    }
+
+    private static void exportCsv(String filename,  Collection<String> allStudents) {
+        List<List<String>> values = getAllStudents(allStudents);
+
+        File file = new File(filename + ".csv");
+
+        try (PrintWriter pw = new PrintWriter(file)) {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("id,");
+            sb.append("first_name,");
+            sb.append("last_name,");
+            sb.append("degree");
+            sb.append("\n");
+
+            for(List<String> list : values) {
+                for (int i = 0; i < list.size(); i++) {
+                    sb.append(list.get(i));
+                    if (i < list.size() - 1) {
+                        sb.append(",");
+                    }
+                }
+                sb.append('\n');
+            }
+
+            pw.write(sb.toString());
+            System.out.println(sb.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
